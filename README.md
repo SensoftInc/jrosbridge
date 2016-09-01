@@ -5,6 +5,11 @@ jrosbridge [![Build Status](https://api.travis-ci.org/rctoris/jrosbridge.png)](h
 
 ### Example Usage
 
+In order to use this library on android, compile it as jar (or use the .jar from the /build folder) and add it to your android project. The gradle dependencies should look like this:
+
+compile files('libs/jrosbridge.jar')
+compile group: 'org.glassfish', name: 'javax.json', version: '1.0.4'
+compile 'org.java-websocket:Java-WebSocket:1.3.0'
 
 ```java
 public static void main(String[] args) throws InterruptedException {
