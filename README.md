@@ -1,45 +1,34 @@
 jrosbridge [![Build Status](https://api.travis-ci.org/rctoris/jrosbridge.png)](https://travis-ci.org/rctoris/jrosbridge)
 ==========
 
-#### A Native Java EE rosbridge Client
+#### A Native Java EE rosbridge Client -- modified version which works on android
 
 ### Example Usage
-
-To include this library, use the following in your Maven configuration:
-
-```
-<dependency>
-    <groupId>edu.wpi.rail</groupId>
-    <artifactId>jrosbridge</artifactId>
-    <version>0.2.0</version>
-</dependency>
-```
 
 
 ```java
 public static void main(String[] args) throws InterruptedException {
-	Ros ros = new Ros("localhost");
-	ros.connect();
+	final Ros ros = new Ros("localhost");
 
-	Topic echo = new Topic(ros, "/echo", "std_msgs/String");
-	Message toSend = new Message("{\"data\": \"hello, world!\"}");
-	echo.publish(toSend);
+	ros.connect(new ConnectionCallback() {
+		public void onOpen(ServerHandshake serverHandshake) {
+			Topic topic = new Topic(ros, "/echo_back", "std_msgs/String");
+			topic.subscribe(new TopicCallback() {
+				public void handleMessage(Message message) {
+					System.out.println(message);
+				}
+			});
+		}
 
-	Topic echoBack = new Topic(ros, "/echo_back", "std_msgs/String");
-	echoBack.subscribe(new TopicCallback() {
-		@Override
-		public void handleMessage(Message message) {
-			System.out.println("From ROS: " + message.toString());
+		public void onClose(int i, String s, boolean b) {
+			System.out.println("on close");
+		}
+
+		public void onError(Exception e) {
+			System.out.println("on error");
+			e.printStackTrace();
 		}
 	});
-
-	Service addTwoInts = new Service(ros, "/add_two_ints", "rospy_tutorials/AddTwoInts");
-
-	ServiceRequest request = new ServiceRequest("{\"a\": 10, \"b\": 20}");
-	ServiceResponse response = addTwoInts.callServiceAndWait(request);
-	System.out.println(response.toString());
-	
-	ros.disconnect();
 }
 ```
 
