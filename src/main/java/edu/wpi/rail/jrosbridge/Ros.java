@@ -8,6 +8,7 @@ import edu.wpi.rail.jrosbridge.messages.Message;
 import edu.wpi.rail.jrosbridge.services.ServiceRequest;
 import edu.wpi.rail.jrosbridge.services.ServiceResponse;
 import org.java_websocket.client.WebSocketClient;
+import org.java_websocket.drafts.Draft_6455;
 import org.java_websocket.handshake.ServerHandshake;
 
 import javax.json.Json;
@@ -18,6 +19,7 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Map;
 
 /**
  * The Ros object is the main connection point to the rosbridge server. This
@@ -161,7 +163,11 @@ public class Ros {
      * Attempt to establish a connection to rosbridge. Errors are printed to the
      * error output stream.
      */
+
     public void connect(final ConnectionCallback connectionCallback) {
+        this.connect(connectionCallback, 0);
+    }
+    public void connect(final ConnectionCallback connectionCallback, int timeout) {
 
         if (connected && webSocketClient != null) {
             return;
@@ -171,7 +177,7 @@ public class Ros {
             // create a WebSocket connection here
             URI uri = new URI(this.getURL());
 
-            webSocketClient = new WebSocketClient(uri) {
+            webSocketClient = new WebSocketClient(uri, new Draft_6455(), null, timeout) {
                 @Override
                 public void onOpen(ServerHandshake serverHandshake) {
                     connected = true;
