@@ -11,6 +11,7 @@ compile files('libs/jrosbridge.jar')
 compile group: 'org.glassfish', name: 'javax.json', version: '1.0.4'
 compile 'org.java-websocket:Java-WebSocket:1.3.0'
 ```
+Java:
 
 ```java
 public static void main(String[] args) throws InterruptedException {
@@ -36,6 +37,30 @@ public static void main(String[] args) throws InterruptedException {
 		}
 	});
 }
+```
+Kotlin:
+```kotlin
+fun main(args: Array<String>) {
+	val ros = Ros("localhost")
+	ros.connect(ConnectionCallback() {
+		override fun onOpen(p0: ServerHandshake?) {
+			val topic = Topic(ros, "/echo_back", "std_msgs/String")
+			topic.subscribe(message -> run {
+				println(message)
+			})
+		}
+
+		override fun onClose(p0: Int, p1: String?, p2: Boolean) {
+			println("on close")
+		}
+
+		override fun onError(p0: Exception?) {
+			println("on error");
+			p0.printStackTrace()
+		}
+	})
+}
+
 ```
 
 ### License
